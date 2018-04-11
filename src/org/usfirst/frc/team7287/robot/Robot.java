@@ -32,11 +32,12 @@ public class Robot extends IterativeRobot {
 	ClawHeightSensor clawHeightSensor;
 	TalonSRX clawMotor;
 	TalonSRX verticalMotor;
-	DigitalInput bottomLimit;
-	DigitalInput topLimit;
+//	DigitalInput bottomLimit;
+//	DigitalInput topLimit;
 	String switchAndScaleSides = DriverStation.getInstance().getGameSpecificMessage();
 	String closeSwitchSide;
 	int autoState;
+	DigitalInput startingPosition; //0 is middle, 1 is not
 	
 	
 	@Override
@@ -49,8 +50,9 @@ public class Robot extends IterativeRobot {
 		clawHeightSensor = new ClawHeightSensor(0);
 		clawMotor = new TalonSRX(0);
 		verticalMotor = new TalonSRX(1);
-		bottomLimit = new DigitalInput(0);
-		topLimit = new DigitalInput (1);
+//		bottomLimit = new DigitalInput(0);
+//		topLimit = new DigitalInput (1);
+		startingPosition = new DigitalInput (0);
 		this.closeSwitchSide = String.valueOf(this.switchAndScaleSides.charAt(0));
 		System.out.println("Our side of each is: " + switchAndScaleSides);
 		System.out.println("Our side of the close switch is: " + closeSwitchSide);
@@ -69,10 +71,14 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void autonomousPeriodic() {
-		System.out.println(autoState);
 		double turnTime = 0.5;
 		switch (autoState) {
 				case 0:
+					if (startingPosition.get() == true) {
+						//Robot is not in Middle
+						autoState = 1;
+						break;
+					}
 					if (closeSwitchSide.equals("L")) {
 						autoState = 2;
 					}
@@ -82,7 +88,7 @@ public class Robot extends IterativeRobot {
 					break;
 				case 1:
 					//Drives straight into switch to deliver cube(middle right)
-					drive.forward(1);
+					drive.forward(1.0);
 					if (timer.get() >= 0.8) {
 						timer.reset();
 						autoState = 10 ;
