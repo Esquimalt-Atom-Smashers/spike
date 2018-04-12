@@ -95,26 +95,31 @@ public class Robot extends IterativeRobot {
 					}
 					break;
 				case 2: //first part of s
-					double rightSideSpeed = 0.75;
-					drive.tankDrive(rightSideSpeed*0.4, rightSideSpeed);
-					if (timer.get() >= 1) {
+					double rightSideSpeed = 1;
+					drive.tankDrive(rightSideSpeed*0.45, rightSideSpeed);
+					if (timer.get() >= 0.8) {
 						timer.reset();
 						autoState = 3 ;
+//						autoState = 10 ;
 					}
 					break;
 				case 3: // drive forward to align with left side of switch
-					double leftSideSpeed = 0.75;
-					drive.tankDrive(leftSideSpeed,  leftSideSpeed*0.7);
-					if (timer.get() >= 1.5) {
+					double leftSideSpeed = 1;
+					drive.tankDrive(leftSideSpeed,  leftSideSpeed*0.55);
+					if (timer.get() >= 0.86) {
 						timer.reset();
-						autoState = 10 ;
+						autoState = 11 ;
 					}
 					break;
 				
-				case 10: // Stop
+				case 10: // Hard Stop
 					drive.stop();
 					break;
+					
+				case 11: // Soft Stop
+					break;
 				}
+				
 	}
 	
 
