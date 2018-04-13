@@ -38,6 +38,8 @@ public class Robot extends IterativeRobot {
 	String closeSwitchSide;
 	int autoState;
 	DigitalInput startingPosition; //0 is middle, 1 is not
+	boolean reverse;
+	double reverseValue;
 	
 	
 	@Override
@@ -56,6 +58,7 @@ public class Robot extends IterativeRobot {
 		this.closeSwitchSide = String.valueOf(this.switchAndScaleSides.charAt(0));
 		System.out.println("Our side of each is: " + switchAndScaleSides);
 		System.out.println("Our side of the close switch is: " + closeSwitchSide);
+		
 	}
 	
 
@@ -66,6 +69,8 @@ public class Robot extends IterativeRobot {
 		timer.reset();
 		timer.start();
 		autoState = 0;
+		reverse = false;
+		reverseValue = 1;
 	}
 	
 	
@@ -73,8 +78,6 @@ public class Robot extends IterativeRobot {
 	public void autonomousPeriodic() {
 		double turnTime = 0.5;
 		double direction = -1;
-		boolean reverse = false;
-		double reverseValue = 1;
 		switch (autoState) {
 				case 0:
 					if (startingPosition.get() == true) {
@@ -103,7 +106,6 @@ public class Robot extends IterativeRobot {
 					if (timer.get() >= 0.8) {
 						timer.reset();
 						autoState = 3 ;
-//						autoState = 10 ;
 					}
 					break;
 				case 3: // drive forward to align with left side of switch
@@ -111,7 +113,7 @@ public class Robot extends IterativeRobot {
 					drive.tankDrive(leftSideSpeed,  leftSideSpeed*0.55);
 					if (timer.get() >= 0.86) {
 						timer.reset();
-						autoState = 11 ;
+						autoState = 100 ;
 					}
 					break;
 				
@@ -120,9 +122,10 @@ public class Robot extends IterativeRobot {
 					break;
 				case 20:	//2nd cube
 					//From switch to turn point
-					drive.reverse(reverseValue * 0.50);
-					if (timer.get() >= 0.50) {
+					drive.reverse(reverseValue * 1);
+					if (timer.get() >= 0.75) {
 						timer.reset();
+						drive.stop();
 						if (reverse) {
 							autoState = 10;
 							break;
@@ -131,33 +134,15 @@ public class Robot extends IterativeRobot {
 					}
 					break;
 				case 21: //turn
-					if(closeSwitchSide.equals("L")) {
-						drive.turn("right",reverseValue * 1);
-						if (timer.get() >= 0.45) {
-							timer.reset();
-							if (reverse) {
-								autoState = autoState - 1;
-								break;
-							}
-							autoState = 10;
-							break;
-							}
+					drive.turn("right", 1);
+					if (timer.get() >= 0.4) {
+						timer.reset();
+						autoState = 22;
 					}
-						if(closeSwitchSide.equals("R")) {
-							drive.turn("left",reverseValue * 1);
-							if (timer.get() >= 0.45) {
-								timer.reset();
-								if (reverse) {
-									autoState = autoState - 1;
-									break;
-								}
-								autoState = 10;
-								break;
-							}
-						}
+					break;
 				case 22://forward to centre
 					drive.forward(reverseValue * 1);
-					if (timer.get() >= 0.4) {
+					if (timer.get() >= 1.4) {
 						timer.reset();
 						if (reverse) {
 							autoState = autoState - 1;
@@ -169,7 +154,7 @@ public class Robot extends IterativeRobot {
 				case 23://opposite turn from before
 					if(closeSwitchSide.equals("R")) {
 						drive.turn("right",reverseValue * 1);
-						if (timer.get() >= 0.45) {
+						if (timer.get() >= turnTime) {
 							timer.reset();
 							if (reverse) {
 								autoState = autoState - 1;
@@ -181,7 +166,7 @@ public class Robot extends IterativeRobot {
 					}
 						if(closeSwitchSide.equals("L")) {
 							drive.turn("left",reverseValue * 1);
-							if (timer.get() >= 0.45) {
+							if (timer.get() >= turnTime) {
 								timer.reset();
 								if (reverse) {
 									autoState = autoState - 1;
@@ -212,7 +197,15 @@ public class Robot extends IterativeRobot {
 							break;
 						}
 					case 11: // Soft Stop
+						if (timer.get() >= 0.86) {
+							timer.reset();
+						}
 						break;
+					case 100: 
+						if (timer.get() >= 0.5) {
+							timer.reset();
+							autoState = 20;
+						}
 			}		
 	}
 	
