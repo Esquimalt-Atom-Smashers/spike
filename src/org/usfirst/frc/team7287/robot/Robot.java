@@ -73,6 +73,8 @@ public class Robot extends IterativeRobot {
 	public void autonomousPeriodic() {
 		double turnTime = 0.5;
 		double direction = -1;
+		boolean reverse = false;
+		double reverseValue = 1;
 		switch (autoState) {
 				case 0:
 					if (startingPosition.get() == true) {
@@ -117,25 +119,97 @@ public class Robot extends IterativeRobot {
 					break;
 				case 20:	//2nd cube
 					//From switch to turn point
-					drive.reverse(0.50);
+					drive.reverse(reverseValue * 0.50);
 					if (timer.get() >= 0.50) {
 						timer.reset();
+						if (reverse) {
+							autoState = 10;
+							break;
+						}
 						autoState = 21;
 					}
 					break;
-				case 21; //turn
-				if(closeSwitchSide.equals("L")) {
-					
-				}
-				if(closeSwitchSide.equals("L")) {
-				
-				}
-				if (timer.get() >= 1.5) {
-					timer.reset();
-					autoState = 10 ;
-				}
-				break;
-				
+				case 21: //turn
+					if(closeSwitchSide.equals("L")) {
+						drive.turn("right",reverseValue * 1);
+						if (timer.get() >= 0.45) {
+							timer.reset();
+							if (reverse) {
+								autoState = autoState - 1;
+								break;
+							}
+							autoState = 10;
+							break;
+							}
+					}
+						if(closeSwitchSide.equals("R")) {
+							drive.turn("left",reverseValue * 1);
+							if (timer.get() >= 0.45) {
+								timer.reset();
+								if (reverse) {
+									autoState = autoState - 1;
+									break;
+								}
+								autoState = 10;
+								break;
+							}
+						}
+				case 22://forward to centre
+					drive.forward(reverseValue * 1);
+					if (timer.get() >= 0.4) {
+						timer.reset();
+						if (reverse) {
+							autoState = autoState - 1;
+							break;
+						}
+						autoState = 10;
+						break;
+					}
+				case 23://opposite turn from before
+					if(closeSwitchSide.equals("R")) {
+						drive.turn("right",reverseValue * 1);
+						if (timer.get() >= 0.45) {
+							timer.reset();
+							if (reverse) {
+								autoState = autoState - 1;
+								break;
+							}
+							autoState = 10;
+							break;
+						}
+					}
+						if(closeSwitchSide.equals("L")) {
+							drive.turn("left",reverseValue * 1);
+							if (timer.get() >= 0.45) {
+								timer.reset();
+								if (reverse) {
+									autoState = autoState - 1;
+									break;
+								}
+								autoState = 10;
+								break;
+							}
+						}	
+					case 24:
+						drive.forward(reverseValue * 1);
+						if (timer.get() >= 0.3) {
+							timer.reset();
+							if (reverse) {
+								autoState = autoState - 1;
+								break;
+							}
+							autoState = 10;
+							break;
+						}
+					case 25:
+						grab(0.5);
+						if (timer.get() >= 0.45) {
+							timer.reset();
+							reverse = true;
+							reverseValue = -1;
+							autoState = autoState - 1;
+							break;
+						}
 			}
 	}
 	
