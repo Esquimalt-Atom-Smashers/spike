@@ -38,7 +38,8 @@ public class Robot extends IterativeRobot {
 	String closeSwitchSide;
 	int autoState;
 	DigitalInput startingPosition; //0 is middle, 1 is not
-	
+	DigitalInput startRight;
+	DigitalInput startLeft;
 	
 	@Override
 	public void robotInit() {
@@ -52,7 +53,9 @@ public class Robot extends IterativeRobot {
 		verticalMotor = new TalonSRX(1);
 //		bottomLimit = new DigitalInput(0);
 //		topLimit = new DigitalInput (1);
-		startingPosition = new DigitalInput (0);
+		startRight = new DigitalInput (0);
+		startLeft = new DigitalInput(1);
+		startingPosition = new DigitalInput (2);
 		this.closeSwitchSide = String.valueOf(this.switchAndScaleSides.charAt(0));
 		System.out.println("Our side of each is: " + switchAndScaleSides);
 		System.out.println("Our side of the close switch is: " + closeSwitchSide);
@@ -74,7 +77,7 @@ public class Robot extends IterativeRobot {
 		double turnTime = 0.5;
 		switch (autoState) {
 				case 0:
-					if (startingPosition.get() == true) {
+					if (startLeft.get() || startRight.get()) {
 						//Robot is not in Middle
 						autoState = 1;
 						break;
@@ -126,6 +129,8 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void teleopPeriodic() {
+		System.out.println("Pin 0:"+ startLeft.get() + " :: " + "Pin 1:"+ startRight.get());
+		System.out.println();
 		double teleopSpeed = 1;
 		if (gantryController.getRawAxis(1) != 0) {
 			grab(gantryController.getRawAxis(1));
