@@ -129,8 +129,6 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void teleopPeriodic() {
-		System.out.println("Pin 0:"+ startLeft.get() + " :: " + "Pin 1:"+ startRight.get());
-		System.out.println();
 		double teleopSpeed = 1;
 		if (gantryController.getRawAxis(1) != 0) {
 			grab(gantryController.getRawAxis(1));
