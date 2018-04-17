@@ -32,8 +32,8 @@ public class Robot extends IterativeRobot {
 	ClawHeightSensor clawHeightSensor;
 	TalonSRX clawMotor;
 	TalonSRX verticalMotor;
-//	DigitalInput bottomLimit;
-//	DigitalInput topLimit;
+	DigitalInput bottomLimit;
+	DigitalInput topLimit;
 	String switchAndScaleSides = DriverStation.getInstance().getGameSpecificMessage();
 	String closeSwitchSide;
 	int autoState;
@@ -51,8 +51,8 @@ public class Robot extends IterativeRobot {
 		clawHeightSensor = new ClawHeightSensor(0);
 		clawMotor = new TalonSRX(0);
 		verticalMotor = new TalonSRX(1);
-//		bottomLimit = new DigitalInput(0);
-//		topLimit = new DigitalInput (1);
+		bottomLimit = new DigitalInput(2);
+		topLimit = new DigitalInput (3);
 		startRight = new DigitalInput (0);
 		startLeft = new DigitalInput(1);
 		startingPosition = new DigitalInput (2);
@@ -151,11 +151,17 @@ public class Robot extends IterativeRobot {
 	
 	private void upDown(double move) {	
 		move = -move; //invert move directions
+		
 		if (move > 0) {
+			//lowers speed if moving down for saftey
 			move = move * 0.5;
 		}
-		verticalMotor.set(ControlMode.PercentOutput, move);
-	}	
+		if (move > 0 && bottomLimit.get() || move< 0 && topLimit.get()) {
+			return;
+		}
+			verticalMotor.set(ControlMode.PercentOutput, move);
+	
+		}	
 	
 	
 	private void grab(double speed) {
