@@ -78,6 +78,7 @@ public class Robot extends IterativeRobot {
 	public void autonomousPeriodic() {
 		double turnTime = 0.5;
 		double direction = -1;
+		System.out.println("Current State: " + autoState);
 		switch (autoState) {
 				case 0:
 					if (startingPosition.get() == true) {
@@ -123,7 +124,7 @@ public class Robot extends IterativeRobot {
 				case 20:	//2nd cube
 					//From switch to turn point
 					drive.reverse(reverseValue * 1);
-					if (timer.get() >= 0.75) {
+					if (timer.get() >= 0.7) {
 						timer.reset();
 						drive.stop();
 						if (reverse) {
@@ -135,22 +136,22 @@ public class Robot extends IterativeRobot {
 					break;
 				case 21: //turn
 					drive.turn("right", 1);
-					if (timer.get() >= 0.4) {
+					if (timer.get() >= 0.35) {
 						timer.reset();
 						autoState = 22;
 					}
 					break;
 				case 22://forward to centre
 					drive.forward(reverseValue * 1);
-					if (timer.get() >= 1.4) {
+					if (timer.get() >= 1.6) {
 						timer.reset();
 						if (reverse) {
 							autoState = autoState - 1;
 							break;
 						}
 						autoState = 10;
-						break;
 					}
+					break;
 				case 23://opposite turn from before
 					if(closeSwitchSide.equals("R")) {
 						drive.turn("right",reverseValue * 1);
@@ -202,10 +203,12 @@ public class Robot extends IterativeRobot {
 						}
 						break;
 					case 100: 
+						drive.stop();
 						if (timer.get() >= 0.5) {
 							timer.reset();
 							autoState = 20;
 						}
+						break;
 			}		
 	}
 	
