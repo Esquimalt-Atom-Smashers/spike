@@ -36,7 +36,7 @@ public class Robot extends IterativeRobot {
 //	DigitalInput topLimit;
 	String switchAndScaleSides = DriverStation.getInstance().getGameSpecificMessage();
 	String closeSwitchSide;
-	int autoState;
+	String autoState;
 	DigitalInput startingPosition; //0 is middle, 1 is not
 	boolean reverse;
 	double reverseValue;
@@ -63,15 +63,18 @@ public class Robot extends IterativeRobot {
 		System.out.println("Our side of the close switch is: " + closeSwitchSide);
 		
 	}
+	private void changeState (String newState) {
+		System.out.println("State change: " + autoState + " -> " + newState.toLowerCase());
+			autoState = newState.toLowerCase();
+	}
 	
-
 	@Override
 	public void autonomousInit() {
 		timeFactor = 1;
 		timeFix = 0;
 		timer.reset();
 		timer.start();
-		autoState = 20;
+		changeState("0");
 		reverse = false;
 		reverseValue = 1;
 	}
@@ -79,128 +82,204 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void autonomousPeriodic() {
-		double turnTime = 0.5;
+		double turnTime = 0.2;
 		double direction = -1;
-		System.out.println("Current State: " + autoState);
+		double elapsedTime;
+		boolean isGrabbing = false;
+		System.out.println("Current State: " + autoState);	
+		if (isGrabbing) {
+			grab(0.8);
+		}
 		switch (autoState) {
-				case 0:
+				case "0":
 					if (startLeft.get() || startRight.get()) {
 						//Robot is not in Middle
-						autoState = 1;
+						changeState("not-middle");
 						break;
 					}
 					if (closeSwitchSide.equals("L")) {
-						autoState = 2;
+						changeState("2");
 					}
 					else {
-						autoState = 1;
+						changeState("1");
 					}
 					break;
-				case 1:
+				case "not-middle":
+					drive.forward(1.0);
+					if (timer.get() >= 0.8) {
+						timer.reset();
+						changeState("hard-stop");
+					}
+					break;
+				case "1":
 					//Drives straight into switch to deliver cube(middle right)
 					drive.forward(1.0);
 					if (timer.get() >= 0.8) {
 						timer.reset();
-						autoState = 10 ;
+						changeState("20") ;
 					}
 					break;
-				case 2: //first part of s
+				case "2": //first part of s
 					double rightSideSpeed = 1;
 					drive.tankDrive(rightSideSpeed*0.45, rightSideSpeed);
 					if (timer.get() >= 0.8) {
 						timer.reset();
-						autoState = 3 ;
+						changeState("3") ;
 					}
 					break;
-				case 3: // drive forward to align with left side of switch
+				case "3": // drive forward to align with left side of switch
+					elapsedTime = 0.86;
 					double leftSideSpeed = 1;
 					drive.tankDrive(leftSideSpeed,  leftSideSpeed*0.55);
-					if (timer.get() >= 0.86) {
-						timer.reset();
-						autoState = 100 ;
+					if (timer.get() >= elapsedTime ) {
+						if (timer.get() < elapsedTime + 0.4) {
+//							drive.stop();
+							break;
+						}
+						changeState("20");
 					}
 					break;
-				
-				case 10: // Hard Stop
-					drive.stop();
-					break;
-					
-				case 20:	//2nd cube
+				case "20":	//2nd cube
 					//From switch to turn point
 					double elapseTime = 0.6;
-					drive.reverse(reverseValue * 1);
+					drive.reverse(1);
 					if (timer.get() >= elapseTime) {
-						
 						if (timer.get() < elapseTime + 0.4) {
 							drive.stop();
 							break;
 						}
-						
 						timer.reset();
-						drive.stop();
-						if (reverse) {
-							autoState = 10;
-							break;
-						}
-						autoState = 21;
+						//Splitter
+						String nextState = "21-" + closeSwitchSide.toLowerCase();
+						changeState(nextState);
 					}
 					break;
-				case 21: //turn
+				case "21-l": //turn
 					drive.turn("right", 1);
-					if (timer.get() >= 0.2) {
+					if (timer.get() >= turnTime) {
 						timer.reset();
-						autoState = 22;
+						changeState("22");;
 					}
 					break;
-				case 22://forward to centre
-					drive.forward(reverseValue * 1);
+				case "21-r": //turn
+					drive.turn("left", 1);
+					if (timer.get() >= turnTime) {
+						timer.reset();
+						changeState("22");
+					}
+					break;
+				case "22"://forward to centre
+					drive.forward(1);
 					if (timer.get() >= 0.6) {
 						timer.reset();
-						if (reverse) {
-							autoState = autoState - 1;
-							break;
-						}
-						autoState = 23;
+						
+						//Splitter
+						String nextState = "23-" + closeSwitchSide.toLowerCase();
+						changeState(nextState);
 					}
 					break;
-				case 23:
+				case "23-l":
 					drive.turn("left", 1);
-					if (timer.get() >= 0.2) {
+					if (timer.get() >= turnTime) {
 						timer.reset();
-						autoState = 22;
+						changeState("24");
 					}
-					break;	
-					case 24:
-						drive.forward(reverseValue * 1);
-						if (timer.get() >= 0.3) {
-							timer.reset();
-							if (reverse) {
-								autoState = autoState - 1;
-								break;
-							}
-							autoState = 10;
+				case "23-r":
+					drive.turn("right", 1);
+					if (timer.get() >= turnTime) {
+						timer.reset();
+						changeState("24");
+					}
+			//Where we left off
+				case "24":
+					drive.forward(1);
+					if (timer.get() >= 0.3) {
+						timer.reset();
+						changeState("hard-stop");
+					}
+					break;
+				case "25":
+					grab(0.5);
+					if (timer.get() >= 0.45) {
+						isGrabbing = true;
+						timer.reset();
+						changeState("30");
+					}
+					break;
+				case "30":
+					drive.reverse(1);
+					if (timer.get() >= 0.3) {
+						timer.reset();
+						//Splitter
+						String nextState = "31-" + closeSwitchSide.toLowerCase();
+						changeState(nextState);
+					}
+					break;
+				case "31-l":
+					drive.turn("right", 1);
+					if (timer.get() >= turnTime) {
+						timer.reset();
+						changeState("32");
+					}
+				case "31-r":
+					drive.turn("left", 1);
+					if (timer.get() >= turnTime) {
+						timer.reset();
+						changeState("32");
+					}
+				case "32": //center to center of switch
+					drive.reverse(1);
+					if (timer.get() >= 0.6) {
+						timer.reset();
+						//Splitter
+						String nextState = "33-" + closeSwitchSide.toLowerCase();
+						changeState(nextState);
+					}
+					break;
+				case "33-l": //turn
+					drive.turn("left", 1);
+					if (timer.get() >= turnTime) {
+						timer.reset();
+						changeState("34");;
+					}
+					break;
+				case "33-r": //turn
+					drive.turn("right", 1);
+					if (timer.get() >= turnTime) {
+						timer.reset();
+						changeState("34");
+					}
+					break;
+				case "34":
+					elapseTime = 0.6;
+					drive.forward(1);
+					upDown(0.5);
+					if (timer.get() >= elapseTime) {
+						if (timer.get() < elapseTime + 0.4) {
 							break;
 						}
-					case 25:
-						grab(0.5);
-						if (timer.get() >= 0.45) {
-							timer.reset();
-							reverse = true;
-							reverseValue = -1;
-							autoState = autoState - 1;
-							break;
-						}
-					case 11: // Soft Stop
-						if (timer.get() >= 0.86) {
-							timer.reset();
-						}
-						break;
-					case 100: 
-						if (timer.get() >= 0.5) {
-							timer.reset();
-							autoState = 20;
-						}
-						break;
+						changeState("35");
+						timer.reset();
+					}
+					break;
+				case "35":
+					isGrabbing = false;
+					grab(0.5);
+					break;
+				case "soft-stop": // Soft Stop
+					if (timer.get() >= 0.86) {
+						timer.reset();
+						changeState("hard-stop");
+					}
+					break;
+				case "hard-stop": // Hard Stop
+					drive.stop();
+					break;
+				default:
+					System.out.println("Reached Unknown State");
+					drive.stop();
+					isGrabbing = false;
+					break;
 			}		
 	}
 	
