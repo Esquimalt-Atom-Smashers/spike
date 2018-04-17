@@ -40,7 +40,8 @@ public class Robot extends IterativeRobot {
 	DigitalInput startingPosition; //0 is middle, 1 is not
 	boolean reverse;
 	double reverseValue;
-	
+	DigitalInput startRight;
+	DigitalInput startLeft;
 	
 	@Override
 	public void robotInit() {
@@ -54,7 +55,9 @@ public class Robot extends IterativeRobot {
 		verticalMotor = new TalonSRX(1);
 //		bottomLimit = new DigitalInput(0);
 //		topLimit = new DigitalInput (1);
-		startingPosition = new DigitalInput (0);
+		startRight = new DigitalInput (0);
+		startLeft = new DigitalInput(1);
+		startingPosition = new DigitalInput (2);
 		this.closeSwitchSide = String.valueOf(this.switchAndScaleSides.charAt(0));
 		System.out.println("Our side of each is: " + switchAndScaleSides);
 		System.out.println("Our side of the close switch is: " + closeSwitchSide);
@@ -68,7 +71,7 @@ public class Robot extends IterativeRobot {
 		timeFix = 0;
 		timer.reset();
 		timer.start();
-		autoState = 0;
+		autoState = 20;
 		reverse = false;
 		reverseValue = 1;
 	}
@@ -81,7 +84,7 @@ public class Robot extends IterativeRobot {
 		System.out.println("Current State: " + autoState);
 		switch (autoState) {
 				case 0:
-					if (startingPosition.get() == true) {
+					if (startLeft.get() || startRight.get()) {
 						//Robot is not in Middle
 						autoState = 1;
 						break;
@@ -121,10 +124,18 @@ public class Robot extends IterativeRobot {
 				case 10: // Hard Stop
 					drive.stop();
 					break;
+					
 				case 20:	//2nd cube
 					//From switch to turn point
+					double elapseTime = 0.6;
 					drive.reverse(reverseValue * 1);
-					if (timer.get() >= 0.7) {
+					if (timer.get() >= elapseTime) {
+						
+						if (timer.get() < elapseTime + 0.4) {
+							drive.stop();
+							break;
+						}
+						
 						timer.reset();
 						drive.stop();
 						if (reverse) {
@@ -136,14 +147,14 @@ public class Robot extends IterativeRobot {
 					break;
 				case 21: //turn
 					drive.turn("right", 1);
-					if (timer.get() >= 0.35) {
+					if (timer.get() >= 0.2) {
 						timer.reset();
 						autoState = 22;
 					}
 					break;
 				case 22://forward to centre
 					drive.forward(reverseValue * 1);
-					if (timer.get() >= 1.6) {
+					if (timer.get() >= 0.6) {
 						timer.reset();
 						if (reverse) {
 							autoState = autoState - 1;
@@ -203,7 +214,6 @@ public class Robot extends IterativeRobot {
 						}
 						break;
 					case 100: 
-						drive.stop();
 						if (timer.get() >= 0.5) {
 							timer.reset();
 							autoState = 20;
