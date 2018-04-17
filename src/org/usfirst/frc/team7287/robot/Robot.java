@@ -160,34 +160,16 @@ public class Robot extends IterativeRobot {
 							autoState = autoState - 1;
 							break;
 						}
-						autoState = 10;
+						autoState = 23;
 					}
 					break;
-				case 23://opposite turn from before
-					if(closeSwitchSide.equals("R")) {
-						drive.turn("right",reverseValue * 1);
-						if (timer.get() >= turnTime) {
-							timer.reset();
-							if (reverse) {
-								autoState = autoState - 1;
-								break;
-							}
-							autoState = 10;
-							break;
-						}
+				case 23:
+					drive.turn("left", 1);
+					if (timer.get() >= 0.2) {
+						timer.reset();
+						autoState = 22;
 					}
-						if(closeSwitchSide.equals("L")) {
-							drive.turn("left",reverseValue * 1);
-							if (timer.get() >= turnTime) {
-								timer.reset();
-								if (reverse) {
-									autoState = autoState - 1;
-									break;
-								}
-								autoState = 10;
-								break;
-							}
-						}	
+					break;	
 					case 24:
 						drive.forward(reverseValue * 1);
 						if (timer.get() >= 0.3) {
