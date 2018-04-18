@@ -240,7 +240,7 @@ public class Robot extends IterativeRobot {
 					drive.turn("left", 1);
 					if (timer.get() >= turnTime) {
 						timer.reset();
-						changeState("34");;
+						changeState("34");
 					}
 					break;
 				case "33-r": //turn
