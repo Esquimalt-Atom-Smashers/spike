@@ -156,7 +156,7 @@ public class Robot extends IterativeRobot {
 			//lowers speed if moving down for saftey
 			move = move * 0.5;
 		}
-		if (move > 0 && bottomLimit.get() || move< 0 && topLimit.get()) {
+		if (move< 0 && topLimit.get()) {
 			return;
 		}
 			verticalMotor.set(ControlMode.PercentOutput, move);
