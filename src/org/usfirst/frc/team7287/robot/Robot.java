@@ -34,7 +34,7 @@ public class Robot extends IterativeRobot {
 	TalonSRX verticalMotor;
 //	DigitalInput bottomLimit;
 //	DigitalInput topLimit;
-	String switchAndScaleSides = DriverStation.getInstance().getGameSpecificMessage();
+	String switchAndScaleSides;
 	String closeSwitchSide;
 	int autoState;
 	DigitalInput startingPosition; //0 is middle, 1 is not
@@ -56,9 +56,6 @@ public class Robot extends IterativeRobot {
 		startRight = new DigitalInput (0);
 		startLeft = new DigitalInput(1);
 		startingPosition = new DigitalInput (2);
-		this.closeSwitchSide = String.valueOf(this.switchAndScaleSides.charAt(0));
-		System.out.println("Our side of each is: " + switchAndScaleSides);
-		System.out.println("Our side of the close switch is: " + closeSwitchSide);
 	}
 	
 
@@ -74,6 +71,8 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void autonomousPeriodic() {
+		switchAndScaleSides = DriverStation.getInstance().getGameSpecificMessage();
+		this.closeSwitchSide = String.valueOf(switchAndScaleSides.charAt(0));
 		double turnTime = 0.5;
 		switch (autoState) {
 				case 0:
@@ -92,7 +91,7 @@ public class Robot extends IterativeRobot {
 				case 1:
 					//Drives straight into switch to deliver cube(middle right)
 					drive.forward(1.0);
-					if (timer.get() >= 0.8) {
+					if (timer.get() >= 1) {
 						timer.reset();
 						autoState = 10 ;
 					}
