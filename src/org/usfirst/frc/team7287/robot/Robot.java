@@ -120,10 +120,12 @@ public class Robot extends IterativeRobot {
 					}
 					if (closeSwitchSide.equals("R") && startRight.get() && timer.get() <= 0.5) {
 						drive.tankDrive(0, 0.5);
-					} else if (closeSwitchSide.equals("L") && startLef()) {
+					} else if (closeSwitchSide.equals("L") && startLeft.get() && timer.get() < 0.5) {
 						drive.tankDrive(0.5, 0);
+					} else {
+						drive.stop();
 					}
-						
+					break;
 				case 10: // Hard Stop
 					drive.stop();
 					break;
