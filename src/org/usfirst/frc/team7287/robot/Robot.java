@@ -52,9 +52,6 @@ public class Robot extends IterativeRobot {
 		startRight = new DigitalInput (0);
 		startLeft = new DigitalInput(1);
 		topLimit = new DigitalInput (2);
-		this.closeSwitchSide = String.valueOf(this.switchAndScaleSides.charAt(0));
-		System.out.println("Our side of each is: " + switchAndScaleSides);
-		System.out.println("Our side of the close switch is: " + closeSwitchSide);
 	}
 	
 
@@ -70,6 +67,8 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void autonomousPeriodic() {
+		switchAndScaleSides = DriverStation.getInstance().getGameSpecificMessage();
+		this.closeSwitchSide = String.valueOf(switchAndScaleSides.charAt(0));
 		double turnTime = 0.5;
 		switch (autoState) {
 				case 0:
@@ -88,7 +87,7 @@ public class Robot extends IterativeRobot {
 				case 1:
 					//Drives straight into switch to deliver cube(middle right)
 					drive.forward(1.0);
-					if (timer.get() >= 0.8) {
+					if (timer.get() >= 1) {
 						timer.reset();
 						autoState = 10 ;
 					}
@@ -125,6 +124,7 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void teleopPeriodic() {
+		System.out.println("Switch is: Left: " + startLeft.get() + " Right: " + startRight.get());
 		double teleopSpeed = 1;
 		if (gantryController.getRawAxis(1) != 0) {
 			grab(gantryController.getRawAxis(1));
@@ -149,8 +149,7 @@ public class Robot extends IterativeRobot {
 		move = -move; //invert move directions
 		
 		if (move > 0) {
-			//lowers speed if moving down for saftey
-			move = move * 0.5;
+			move = move * 0.9;
 		}
 		if (move< 0 && topLimit.get()) {
 			return;
