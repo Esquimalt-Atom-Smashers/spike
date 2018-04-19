@@ -78,7 +78,7 @@ public class Robot extends IterativeRobot {
 				case 0:
 					if (startLeft.get() || startRight.get()) {
 						//Robot is not in Middle
-						autoState = 1;
+						autoState = 4;
 						break;
 					}
 					if (closeSwitchSide.equals("L")) {
