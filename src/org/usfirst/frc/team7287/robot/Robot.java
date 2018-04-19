@@ -32,12 +32,10 @@ public class Robot extends IterativeRobot {
 	ClawHeightSensor clawHeightSensor;
 	TalonSRX clawMotor;
 	TalonSRX verticalMotor;
-	DigitalInput bottomLimit;
 	DigitalInput topLimit;
 	String switchAndScaleSides = DriverStation.getInstance().getGameSpecificMessage();
 	String closeSwitchSide;
 	int autoState;
-	DigitalInput startingPosition; //0 is middle, 1 is not
 	DigitalInput startRight;
 	DigitalInput startLeft;
 	
@@ -51,11 +49,9 @@ public class Robot extends IterativeRobot {
 		clawHeightSensor = new ClawHeightSensor(0);
 		clawMotor = new TalonSRX(0);
 		verticalMotor = new TalonSRX(1);
-		bottomLimit = new DigitalInput(2);
-		topLimit = new DigitalInput (3);
 		startRight = new DigitalInput (0);
 		startLeft = new DigitalInput(1);
-		startingPosition = new DigitalInput (2);
+		topLimit = new DigitalInput (2);
 		this.closeSwitchSide = String.valueOf(this.switchAndScaleSides.charAt(0));
 		System.out.println("Our side of each is: " + switchAndScaleSides);
 		System.out.println("Our side of the close switch is: " + closeSwitchSide);
