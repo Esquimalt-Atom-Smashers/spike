@@ -32,12 +32,10 @@ public class Robot extends IterativeRobot {
 	ClawHeightSensor clawHeightSensor;
 	TalonSRX clawMotor;
 	TalonSRX verticalMotor;
-//	DigitalInput bottomLimit;
-//	DigitalInput topLimit;
+	DigitalInput topLimit;
 	String switchAndScaleSides;
 	String closeSwitchSide;
 	int autoState;
-	DigitalInput startingPosition; //0 is middle, 1 is not
 	DigitalInput startRight;
 	DigitalInput startLeft;
 	
@@ -51,11 +49,9 @@ public class Robot extends IterativeRobot {
 		clawHeightSensor = new ClawHeightSensor(0);
 		clawMotor = new TalonSRX(0);
 		verticalMotor = new TalonSRX(1);
-//		bottomLimit = new DigitalInput(0);
-//		topLimit = new DigitalInput (1);
 		startRight = new DigitalInput (0);
 		startLeft = new DigitalInput(1);
-		startingPosition = new DigitalInput (2);
+		topLimit = new DigitalInput (2);
 	}
 	
 
@@ -165,8 +161,13 @@ public class Robot extends IterativeRobot {
 	
 	private void upDown(double move) {	
 		move = -move; //invert move directions
+		
 		if (move > 0) {
-			move = move * 0.5;
+			move = move * 0.9;
+		}
+		if (move< 0 && topLimit.get()) {
+			move = 0;
+
 		}
 		verticalMotor.set(ControlMode.PercentOutput, move);
 	}	
