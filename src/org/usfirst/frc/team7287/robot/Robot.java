@@ -114,15 +114,15 @@ public class Robot extends IterativeRobot {
 					}
 					break;
 				case 4: //Left and Right Autonomous
-					drive.forward(1.0);
-					if (timer.get() <= 1) {
+					drive.forward(0.5);
+					if (timer.get() <= 2.0) {
 						break;
 					}
 					
-					if (closeSwitchSide.equals("R") && startRight.get() && timer.get() > 1.0 && timer.get() < 1.5) {
-						drive.tankDrive(0, 0.5);
-					} else if (closeSwitchSide.equals("L") && startLeft.get() && timer.get() > 1.0 && timer.get() < 1.5) {
-						drive.tankDrive(0.5, 0);
+					if (closeSwitchSide.equals("R") && startRight.get() && timer.get() > 2.0 && timer.get() < 3.0) {
+						drive.tankDrive(0.2, 0.6);
+					} else if (closeSwitchSide.equals("L") && startLeft.get() && timer.get() > 2.0 && timer.get() < 3.0) {
+						drive.tankDrive(0.6, 0.2);
 					} else {
 						timer.reset();
 						autoState = 10;
