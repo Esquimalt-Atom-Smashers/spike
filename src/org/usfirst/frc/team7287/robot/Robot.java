@@ -152,7 +152,8 @@ public class Robot extends IterativeRobot {
 			move = move * 0.9;
 		}
 		if (move< 0 && topLimit.get()) {
-			return;
+			move = 0;
+
 		}
 			verticalMotor.set(ControlMode.PercentOutput, move);
 	
