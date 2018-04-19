@@ -152,7 +152,7 @@ public class Robot extends IterativeRobot {
 	private void upDown(double move) {	
 		move = -move; //invert move directions
 		if (move > 0) {
-			move = move * 0.7;
+			move = move * 0.9;
 		}
 		verticalMotor.set(ControlMode.PercentOutput, move);
 	}	
