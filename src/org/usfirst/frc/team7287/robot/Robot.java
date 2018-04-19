@@ -33,7 +33,7 @@ public class Robot extends IterativeRobot {
 	TalonSRX clawMotor;
 	TalonSRX verticalMotor;
 	DigitalInput topLimit;
-	String switchAndScaleSides = DriverStation.getInstance().getGameSpecificMessage();
+	String switchAndScaleSides;
 	String closeSwitchSide;
 	int autoState;
 	DigitalInput startRight;
@@ -74,7 +74,7 @@ public class Robot extends IterativeRobot {
 				case 0:
 					if (startLeft.get() || startRight.get()) {
 						//Robot is not in Middle
-						autoState = 1;
+						autoState = 4;
 						break;
 					}
 					if (closeSwitchSide.equals("L")) {
@@ -109,7 +109,21 @@ public class Robot extends IterativeRobot {
 						autoState = 11 ;
 					}
 					break;
-				
+				case 4: //Left and Right Autonomous
+					drive.forward(0.5);
+					if (timer.get() <= 2.0) {
+						break;
+					}
+					
+					if (closeSwitchSide.equals("R") && startRight.get() && timer.get() > 2.0 && timer.get() < 3.0) {
+						drive.tankDrive(0.2, 0.6);
+					} else if (closeSwitchSide.equals("L") && startLeft.get() && timer.get() > 2.0 && timer.get() < 3.0) {
+						drive.tankDrive(0.6, 0.2);
+					} else {
+						timer.reset();
+						autoState = 10;
+					}
+					break;
 				case 10: // Hard Stop
 					drive.stop();
 					break;
