@@ -33,6 +33,7 @@ public class Robot extends IterativeRobot {
 	TalonSRX clawMotor;
 	TalonSRX verticalMotor;
 	DigitalInput topLimit;
+	DigitalInput bottomLimit;
 	String switchAndScaleSides;
 	String closeSwitchSide;
 	int autoState;
@@ -52,6 +53,7 @@ public class Robot extends IterativeRobot {
 		startRight = new DigitalInput (0);
 		startLeft = new DigitalInput(1);
 		topLimit = new DigitalInput (2);
+		bottomLimit = new DigitalInput(3);
 	}
 	
 
@@ -164,7 +166,7 @@ public class Robot extends IterativeRobot {
 		if (move > 0) {
 			move = move * 0.9;
 		}
-		if (move< 0 && topLimit.get()) {
+		if (move< 0 && topLimit.get() || move>0 && bottomLimit.get()) {
 			move = 0;
 
 		}
