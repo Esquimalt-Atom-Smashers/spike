@@ -166,14 +166,12 @@ public class Robot extends IterativeRobot {
 		if (move > 0) {
 			move = move * 0.9;
 		}
-		if (move< 0 && topLimit.get() || move>0 && bottomLimit.get()) {
+//		if (move< 0 && topLimit.get() || move>0 && bottomLimit.get()) {
+			if (move< 0 && topLimit.get()) {
 			move = 0;
-
-		}
+			}
 			verticalMotor.set(ControlMode.PercentOutput, move);
-	
 		}	
-	
 	
 	private void grab(double speed) {
 		clawMotor.set(ControlMode.PercentOutput, speed * 0.7);
