@@ -40,6 +40,12 @@ public class Robot extends IterativeRobot {
 	int autoState;
 	DigitalInput trustedDemo;
 	DigitalInput untrustedDemo;
+	double demoSpeed;
+	boolean demoGantry;
+	
+	
+	
+	
 	
 	@Override
 	public void robotInit() {
@@ -57,8 +63,9 @@ public class Robot extends IterativeRobot {
 		bottomLimit = new DigitalInput(3);
 	}
 	//10 is left 00 is middle 01 is right
-	
-	
+
+
+
 
 	@Override
 	public void autonomousInit() {
@@ -142,9 +149,7 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void teleopPeriodic() {
-		if (trustedDemo == true or untrustedDemo == true) {
-			
-		}
+		demoMode();
 		double teleopSpeed = 1;
 		if (gantryController.getRawAxis(1) != 0) {
 			grab(gantryController.getRawAxis(1));
@@ -153,7 +158,7 @@ public class Robot extends IterativeRobot {
 			grab(0);
 		}
 
-		if (gantryController.getRawAxis(3) != 0){
+		if (gantryController.getRawAxis(3) != 0 && demoGantry == true){
 			
 			upDown(gantryController.getRawAxis(3));
 		}
@@ -161,7 +166,7 @@ public class Robot extends IterativeRobot {
 			upDown(0);
 		}
 		
-		spike.arcadeDrive(stick.getY()*teleopSpeed, stick.getRawAxis(2)*teleopSpeed);
+		spike.arcadeDrive(stick.getY()*teleopSpeed*demoSpeed, stick.getRawAxis(2)*teleopSpeed*demoSpeed);
 	}
 	
 	
@@ -187,6 +192,18 @@ public class Robot extends IterativeRobot {
 		clawMotor.set(ControlMode.PercentOutput, 0);
 	}
 	
+	private void demoMode() {
+		if(trustedDemo.get()) {
+			demoSpeed = 1.0;
+			demoGantry = false;
+		} else if(untrustedDemo.get()) {
+			demoSpeed = 0.5;
+			demoGantry = false;
+		} else {
+			demoSpeed = 1.0;
+			demoGantry = true;
+		}
+	}
 
 	private void calibrate() {
 		double turnSpeed = 0.46;
