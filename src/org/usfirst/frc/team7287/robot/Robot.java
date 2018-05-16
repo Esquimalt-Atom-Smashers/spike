@@ -150,7 +150,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		demoMode();
-		double teleopSpeed = 1;
+		double teleopSpeed = 1;  
 		if (gantryController.getRawAxis(1) != 0) {
 			grab(gantryController.getRawAxis(1));
 		}
