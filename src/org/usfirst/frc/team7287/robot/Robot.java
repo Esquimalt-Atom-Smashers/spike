@@ -140,7 +140,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		System.out.println("Switch is: Left: " + startLeft.get() + " Right: " + startRight.get());
-		double teleopSpeed = 1;
+		double teleopSpeed = 0.6;
 		if (gantryController.getRawAxis(1) != 0) {
 			grab(gantryController.getRawAxis(1));
 		}
